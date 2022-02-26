@@ -42,6 +42,7 @@ export default {
   methods: {
     // 更新用户信息
     updateUserInfo() {
+      this.$emit('test')
       // todo
     },
     // 删除用户信息

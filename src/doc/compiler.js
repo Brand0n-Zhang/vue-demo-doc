@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-
 const compiler = require("vue-template-compiler");
 
 const parse = require("@babel/parser");
@@ -18,12 +17,11 @@ let vueStr = fs.readFileSync(
 );
 
 let componentInfo = {
-  name: undefined,
-  props: undefined,
-  data: undefined,
-  slots: undefined,
-  // events: undefined,
-  methods: undefined,
+  name: null,
+  props: null,
+  data: null,
+  slots: null,
+  methods: null,
 };
 
 // {
@@ -67,7 +65,7 @@ let vue = compiler.parseComponent(vueStr);
 //生成html部分的 ast
 let template = compiler.compile(vue.template.content, {
   preserveWhitespace: false,
-  comments: true, // 生成注释信息
+  comments: true,
 });
 
 //生成js部分的 ast
@@ -156,7 +154,7 @@ traverse.default(jsAst, {
           componentInfo.methods = extractMethods(item); // 提取 methods
           break;
         case "name":
-          componentInfo.name = extractName(item);
+          componentInfo.name = extractName(item); // 提取插件名称
           break;
         case "data":
           componentInfo.data = extractData(item); // 提取 model
@@ -176,10 +174,10 @@ const traverserTemplateAst = (ast, visitor = {}) => {
   }
 
   function traverseNode(node, parent) {
-    visitor.enter && visitor.enter(node, parent);
+    // visitor.enter && visitor.enter(node, parent);
     visitor[node.tag] && visitor[node.tag](node, parent);
     node.children && traverseArray(node.children, node);
-    visitor.exit && visitor.exit(node, parent);
+    // visitor.exit && visitor.exit(node, parent);
   }
 
   traverseNode(ast, null);
@@ -190,8 +188,8 @@ traverserTemplateAst(template.ast, {
     !componentInfo.slots && (componentInfo.slots = {});
     // 获取节点位置
     let index = parent.children.findIndex((item) => item === node);
-    let desc = "无描述",
-      name = "-";
+    let desc = "无描述";
+    let name = "-";
     if (index > 0) {
       let tag = parent.children[index - 1];
       // isComment 判断是否是 注释
@@ -214,7 +212,7 @@ console.log(componentInfo);
 let result = new RenderMd(componentInfo, {
   // md 生成的表格 会根据此配置 生成标题和列顺序
   props: { name: "参数", desc: "说明", type: "类型" },
-  slots: { name: "name", desc: "说明" },
+  slots: { name: "插槽名称", desc: "说明" },
   data: { name: "事件名称", desc: "说明" },
   methods: { name: "方法名", desc: "说明" },
 }).render();

@@ -16,7 +16,7 @@
 
 
 ### Slots
-|name|说明|
+|插槽名称|说明|
 |------|------|
 |header|header slot|
 |-|default slot|
